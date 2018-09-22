@@ -5,7 +5,7 @@ import '../../styles/global.css';
 const Button = (props) => {
     return (
         <Col onClick={ props.onClick } md="3" style={{ margin: 0, padding: 5, paddingRight: 0, paddingBottom: 0 }}>
-            <div className="button"> { props.value } </div>
+            <div className="button noselect"> { props.value } </div>
         </Col>
     )
 }
@@ -13,7 +13,7 @@ const Button = (props) => {
 const ButtonSpecial = (props) => {
     return (
         <Col onClick={ props.onClick } md="3" style={{ margin: 0, padding: 5, paddingBottom: 0 }}>
-            <div className="button button-special"> { props.value } </div>
+            <div className="button button-special noselect"> { props.value } </div>
         </Col>
     )
 }
@@ -47,6 +47,7 @@ class Main extends Component {
                 
                 if (display != 'ERROR') {
                     display = this.validateLength(display) ? display : display.substring(0, 8);
+                    display = this.validateNegative(display) ? 'ERROR' : display;
                 }
                 
                 this.setState({ display, secondNumber: '', currentOperation, lastOperation: '' });
@@ -56,6 +57,7 @@ class Main extends Component {
                 
                 if (display != 'ERROR') {
                     display = this.validateLength(display) ? display : display.substring(0, 8);
+                    display = this.validateNegative(display) ? 'ERROR' : display;
                 }
                 
                 this.setState({ display, secondNumber: '', currentOperation, lastOperation: '' });
@@ -65,6 +67,7 @@ class Main extends Component {
                 
                 if (display != 'ERROR') {
                     display = this.validateLength(display) ? display : display.substring(0, 8);
+                    display = this.validateNegative(display) ? 'ERROR' : display;
                 }
                 
                 this.setState({ display, secondNumber: '', currentOperation, lastOperation: '' });
@@ -74,15 +77,17 @@ class Main extends Component {
                 
                 if (display != 'ERROR') {
                     display = this.validateLength(display) ? display : display.substring(0, 8);
+                    display = this.validateNegative(display) ? 'ERROR' : display;
                 }
                 
                 this.setState({ display, secondNumber: '', currentOperation, lastOperation: '' });
-            } else if (this.state.lastOperation === '%') {
+            } else if (this.state.lastOperation === 'mod') {
                 var newNumber = (parseFloat(this.state.secondNumber) % parseFloat(this.state.display)).toString();
                 var display = this.validateMaxNumber(newNumber) ? 'ERROR' : newNumber;
                 
                 if (display != 'ERROR') {
                     display = this.validateLength(display) ? display : display.substring(0, 8);
+                    display = this.validateNegative(display) ? 'ERROR' : display;
                 }
                 
                 this.setState({ display, secondNumber: '', currentOperation, lastOperation: '' });
@@ -115,17 +120,29 @@ class Main extends Component {
         return parseFloat(number) > 999999999 ? true : false;
     }
 
+    validateNegative(number) {
+        return number.includes('-') ? true : false;
+    }
+
     render() {
         return (
             <div className="wrapper">
-                <Container style={{ padding: 0, width: '30%', height: '80vh', backgroundColor: '#011627'}}>
+                <Container style={{ boxShadow: '0px 0px 40px #181818', padding: 0, width: '30%', height: '80vh', backgroundColor: '#011627'}}>
                     <Row style={{ margin: 0, padding: 0 }}>
-                        <div className="display"> { this.state.display } </div>
+                        {
+                            this.state.display != 'ERROR' &&
+                            <div className="display"> { this.state.display } </div>
+                        }
+                        {
+                            this.state.display === 'ERROR' &&
+                            <div className="display error"> { this.state.display } </div>
+                        }
+                        
                     </Row>
                     <Row style={{ margin: 0, padding: 0 }}>
                         <Button onClick={ () => this.resetDisplay() } value='C'/>
                         <Button value=''/>
-                        <Button onClick={ () => this.handleOperation('%') } value='%'/>
+                        <Button onClick={ () => this.handleOperation('mod') } value='mod'/>
                         <ButtonSpecial onClick={ () => this.handleOperation('/') } value='/'/>                        
                     </Row>
                     <Row style={{ margin: 0, padding: 0 }}>                        
@@ -150,7 +167,7 @@ class Main extends Component {
                         <Col onClick={ () => this.handleDigit('0') } md="6" style={{ margin: 0, padding: 5, paddingRight: 0, paddingBottom: 0 }}>
                             <div className="button"> 0 </div>
                         </Col>
-                        <Button value='.'/>
+                        <Button onClick={ () => this.handleDigit('.') } value='.'/>
                         <ButtonSpecial onClick={ () => this.handleOperation('=') } value='='/>                         
                     </Row>
                 </Container>
