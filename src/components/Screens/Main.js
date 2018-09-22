@@ -42,7 +42,7 @@ class Main extends Component {
             if (!this.state.currentOperation && this.state.lastOperation === '') {
                 this.setState({ currentOperation });
             } else if (this.state.lastOperation === '+') {
-                var newNumber = (parseInt(this.state.display) + parseInt(this.state.secondNumber)).toString();
+                var newNumber = (parseFloat(this.state.display) + parseFloat(this.state.secondNumber)).toString();
                 var display = this.validateMaxNumber(newNumber) ? 'ERROR' : newNumber;
                 
                 if (display != 'ERROR') {
@@ -51,7 +51,34 @@ class Main extends Component {
                 
                 this.setState({ display, secondNumber: '', currentOperation, lastOperation: '' });
             } else if (this.state.lastOperation === '-') {
-                var newNumber = (parseInt(this.state.secondNumber) - parseInt(this.state.display)).toString();
+                var newNumber = (parseFloat(this.state.secondNumber) - parseFloat(this.state.display)).toString();
+                var display = this.validateMaxNumber(newNumber) ? 'ERROR' : newNumber;
+                
+                if (display != 'ERROR') {
+                    display = this.validateLength(display) ? display : display.substring(0, 8);
+                }
+                
+                this.setState({ display, secondNumber: '', currentOperation, lastOperation: '' });
+            } else if (this.state.lastOperation === 'X') {
+                var newNumber = (parseFloat(this.state.secondNumber) * parseFloat(this.state.display)).toString();
+                var display = this.validateMaxNumber(newNumber) ? 'ERROR' : newNumber;
+                
+                if (display != 'ERROR') {
+                    display = this.validateLength(display) ? display : display.substring(0, 8);
+                }
+                
+                this.setState({ display, secondNumber: '', currentOperation, lastOperation: '' });
+            } else if (this.state.lastOperation === '/') {
+                var newNumber = (parseFloat(this.state.secondNumber) / parseFloat(this.state.display)).toString();
+                var display = this.validateMaxNumber(newNumber) ? 'ERROR' : newNumber;
+                
+                if (display != 'ERROR') {
+                    display = this.validateLength(display) ? display : display.substring(0, 8);
+                }
+                
+                this.setState({ display, secondNumber: '', currentOperation, lastOperation: '' });
+            } else if (this.state.lastOperation === '%') {
+                var newNumber = (parseFloat(this.state.secondNumber) % parseFloat(this.state.display)).toString();
                 var display = this.validateMaxNumber(newNumber) ? 'ERROR' : newNumber;
                 
                 if (display != 'ERROR') {
@@ -85,7 +112,7 @@ class Main extends Component {
     }
 
     validateMaxNumber(number) {
-        return parseInt(number) > 999999999 ? true : false;
+        return parseFloat(number) > 999999999 ? true : false;
     }
 
     render() {
@@ -98,14 +125,14 @@ class Main extends Component {
                     <Row style={{ margin: 0, padding: 0 }}>
                         <Button onClick={ () => this.resetDisplay() } value='C'/>
                         <Button value=''/>
-                        <Button onClick={ () => this.setState({ currentOperation: '%' }) } value='%'/>
-                        <ButtonSpecial value='/'/>                        
+                        <Button onClick={ () => this.handleOperation('%') } value='%'/>
+                        <ButtonSpecial onClick={ () => this.handleOperation('/') } value='/'/>                        
                     </Row>
                     <Row style={{ margin: 0, padding: 0 }}>                        
                         <Button onClick={ () => this.handleDigit('7') } value='7'/>
                         <Button onClick={ () => this.handleDigit('8') } value='8'/>
                         <Button onClick={ () => this.handleDigit('9') } value='9'/>
-                        <ButtonSpecial onClick={ () => this.setState({ currentOperation: 'X' }) } value='X'/>                        
+                        <ButtonSpecial onClick={ () => this.handleOperation('X') } value='X'/>                        
                     </Row>
                     <Row style={{ margin: 0, padding: 0 }}>
                         <Button onClick={ () => this.handleDigit('4') } value='4'/>
